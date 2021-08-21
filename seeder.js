@@ -6,6 +6,7 @@ const colors = require('colors')
 dotenv.config({path: './config/config.env'})
 
 const Bootcamp = require("./models/Bootcamp");
+const Course = require("./models/Course")
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI, {
@@ -18,12 +19,16 @@ mongoose.connect(process.env.MONGO_URI, {
 const Bootcamps = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/bootcamps.json`)
 );
+const Courses = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/courses.json`)
+);
 
 
 // Import Data to DB
 const importData = async () => {
   try {
     await Bootcamp.create(Bootcamps);
+    await Course.create(Courses);
 
     console.log("Data Imported...".green.inverse);
     process.exit();
@@ -36,6 +41,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Bootcamp.deleteMany();
+    await Course.deleteMany();
 
     console.log("Data Deleted...".red.inverse);
     process.exit()
