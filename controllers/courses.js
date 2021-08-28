@@ -1,0 +1,28 @@
+const asyncHandler = require("../middleware/async");
+const ErrorResponse = require("../utils/erorrResponse");
+const Course = require("../models/Course");
+
+
+
+// @desc            Get All Courses or Courses for a specific bootcamp
+// @route           GET /api/v1/courses
+// @route           GET /api/v1/bootcamps/:bootcampId/courses
+// @access          Public
+
+module.exports.getCourses = asyncHandler(async (req, res, next) => { 
+    let query; 
+
+    if(req.params.bootcampId){ 
+        query = Course.find({bootcamp: req.params.bootcampId})
+    }else{
+        query = Course.find()
+    }
+
+    const courses = await query
+
+    res.status(200).json({
+        success: true, 
+        count: courses.length, 
+        data: courses
+    })
+}) 
