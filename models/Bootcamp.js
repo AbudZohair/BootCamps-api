@@ -100,8 +100,29 @@ const BootcampSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
   }
 );
+
+// Add Virutal Field (Courses)
+
+BootcampSchema.virtual("courses", {
+  ref: "Course",
+  localField: "_id",
+  foreignField: "bootcamp",
+});
+
+// Add MiddleWare For cascade Deleteing Courses related to BootCamp
+BootcampSchema.pre("remove", async function (next) {
+  console.log(`Deleting Courses Related to Bootcamp ${this._id}`)
+  await this.model("Course").deleteMany({ bootcamp: this._id });
+  next();
+});
 
 // Add MiddleWare to handle the Slug Field
 BootcampSchema.pre("save", function (next) {
@@ -110,21 +131,21 @@ BootcampSchema.pre("save", function (next) {
 });
 
 // GeoCoder and Adding location Data
-BootcampSchema.pre('save', async function(next){ 
+BootcampSchema.pre("save", async function (next) {
   const [loc] = await geocoder.geocode(this.address);
-  this.location = { 
-    type: 'Point', 
-    coordinates: [loc.longitude, loc.latitude], 
+  this.location = {
+    type: "Point",
+    coordinates: [loc.longitude, loc.latitude],
     formattedAddress: loc.formattedAddress,
     street: loc.streetName,
     city: loc.city,
     state: loc.stateCode,
     zipcode: loc.zipcode,
     country: loc.countryCode,
-  }
+  };
 
   // Don't save Address
-  this.address = undefined
-  next()
-})
+  this.address = undefined;
+  next();
+});
 module.exports = mongoose.model("Bootcamp", BootcampSchema);
