@@ -117,9 +117,13 @@ BootcampSchema.virtual("courses", {
   foreignField: "bootcamp",
 });
 
+BootcampSchema.pre("findOne", function (next) {
+  this.populate("courses");
+  next();
+});
 // Add MiddleWare For cascade Deleteing Courses related to BootCamp
 BootcampSchema.pre("remove", async function (next) {
-  console.log(`Deleting Courses Related to Bootcamp ${this._id}`)
+  console.log(`Deleting Courses Related to Bootcamp ${this._id}`);
   await this.model("Course").deleteMany({ bootcamp: this._id });
   next();
 });
