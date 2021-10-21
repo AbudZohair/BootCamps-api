@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const colors = require("colors");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/error");
-
+const cookieParser = require("cookie-parser");
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
 
@@ -26,6 +26,8 @@ if (process.env.NODE_ENV === "development") {
 
 // Use Body Parser
 app.use(express.json());
+// User cookiePrser
+app.use(cookieParser());
 
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps);
